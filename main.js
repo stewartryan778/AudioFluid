@@ -62,9 +62,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const moodSelect = document.getElementById("moodSelect");
 
+  // Logo elements declared in enhanced logo section below
   const logoTextInput = document.getElementById("logoTextInput");
   const logoVisibleCheckbox = document.getElementById("logoVisible");
-  const logoSizeSlider = document.getElementById("logoSize");
   const logoTextDisplay = document.getElementById("logoTextDisplay");
   const overlayHud = document.getElementById("overlayHud");
 
@@ -1848,5 +1848,5 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  console.log("✅ VJ Studio loaded successfully!");
+  console.log("✅ Cipher loaded successfully!");
 });
