@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Web VJ Visualizer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- HEADER BAR -->
+<div id="headerBar">
+  <div id="appLogo">
+    <span id="appName">VJ Studio</span>
+  </div>
+  <div id="headerControls">
+    <!-- Undo/Redo buttons -->
+    <button id="undoBtn" title="Undo (Ctrl+Z)" disabled>↶</button>
+    <button id="redoBtn" title="Redo (Ctrl+Y)" disabled>↷</button>
+    
+    <label for="themeSelect" class="theme-label">Theme:</label>
+    <select id="themeSelect">
+      <option value="gold">Gold (Default)</option>
+      <option value="cyan">Cyan</option>
+      <option value="purple">Purple</option>
+      <option value="green">Green</option>
+      <option value="pink">Pink</option>
+      <option value="orange">Orange</option>
+      <option value="blue">Blue</option>
+      <option value="red">Red</option>
+    </select>
+    
+    <!-- Keyboard shortcuts help -->
+    <button id="helpBtn" title="Keyboard Shortcuts">?</button>
+  </div>
+</div>
+
+<div id="layout">
+
+  <!-- LEFT PANEL: LAYERS -->
+  <div id="layersPanel">
+    <h2>Layers</h2>
+    <div id="layerContainer"></div>
+    <button id="addLayerBtn">+ Add Layer</button>
+  </div>
+
+  <!-- CENTER: STAGE -->
+  <div id="stageWrapper">
+    <canvas id="stage"></canvas>
+
+    <!-- Audio Visualization Overlay -->
+    <canvas id="audioVizOverlay"></canvas>
+
+    <!-- TEXT / LOGO OVERLAY -->
+    <div id="overlayHud">
+      <span id="logoTextDisplay">Your Logo</span>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL: MEDIA + PERFORMANCE + QUICK FX -->
+  <div id="deckPanel">
+    <h2>Performance Panel</h2>
+
+    <!-- MEDIA -->
+    <div class="section">
+      <h3>Media</h3>
+      <label class="field-label">Load Audio Files</label>
+      <input type="file" id="audioInput" accept="audio/*" multiple />
+
+      <audio
+        id="audioPlayer"
+        controls
+        style="width: 100%; margin-top: 8px;"
+      ></audio>
+    </div>
+
+    <!-- PLAYLIST -->
+    <div class="section">
+      <h3>Playlist</h3>
+      <div id="deckGrid"></div>
+    </div>
+
+    <!-- PERFORMANCE MACROS + LAYER MUTES + AUTO SWITCH -->
+    <div class="section">
+      <h3>Performance</h3>
+
+      <label class="field-label" for="macroEnergy">Energy</label>
+      <input
+        type="range"
+        id="macroEnergy"
+        min="0"
+        max="1"
+        step="0.01"
+        value="0.5"
+      />
+
+      <label class="field-label" for="macroMotion">Motion</label>
+      <input
+        type="range"
+        id="macroMotion"
+        min="0"
+        max="1"
+        step="0.01"
+        value="0.5"
+      />
+
+      <label class="field-label" for="macroDetail">Detail</label>
+      <input
+        type="range"
+        id="macroDetail"
+        min="0"
+        max="1"
+        step="0.01"
+        value="0.5"
+      />
+
+      <div class="subsection">
+        <h4>Layer Mutes</h4>
+        <div id="layerMuteRow"></div>
+      </div>
+
+      <div class="subsection">
+        <h4>Auto Scene Switch</h4>
+        <label class="checkbox-row">
+          <input type="checkbox" id="autoSwitchEnabled" />
+          Enable Auto Switch
+        </label>
+        <label class="field-label" for="autoSwitchInterval">Interval (seconds)</label>
+        <input
+          type="range"
+          id="autoSwitchInterval"
+          min="5"
+          max="60"
+          step="1"
+          value="20"
+        />
+      </div>
+    </div>
+
+    <!-- QUICK EFFECTS FOR SELECTED LAYER -->
+    <div class="section">
+      <h3>Quick Effects</h3>
+      <div id="quickEffects">
+        <p style="font-size:11px; color:#aaa;">No layer selected</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM PANEL: INSPECTOR + GLOBAL CONTROLS -->
+  <div id="inspectorPanel">
+    <div id="inspectorColumns">
+      <!-- LEFT SIDE: PER-LAYER INSPECTOR -->
+      <div id="inspectorLeft">
+        <h2>Inspector</h2>
+        <div id="inspectorContent">
+          <p>No layer selected</p>
+        </div>
+      </div>
+
+      <!-- RIGHT SIDE: GLOBAL CONTROLS -->
+      <div id="inspectorRight">
+        <h2>Global</h2>
+
+        <div class="global-group">
+          <h3>Brightness & Audio React</h3>
+          <div class="global-row">
+            <div class="global-col">
+              <label for="brightness">Brightness</label>
+              <input
+                type="range"
+                id="brightness"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0.5"
+              />
+            </div>
+            <div class="global-col">
+              <label for="audioReact">Audio React</label>
+              <input
+                type="range"
+                id="audioReact"
+                min="0"
+                max="2"
+                step="0.01"
+                value="1"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- NEW: Post-Processing Effects -->
+        <div class="global-group">
+          <h3>Post-Processing</h3>
+          <div class="global-row">
+            <div class="global-col">
+              <label for="bloomIntensity">Bloom</label>
+              <input
+                type="range"
+                id="bloomIntensity"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0"
+              />
+            </div>
+            <div class="global-col">
+              <label for="chromaticAberration">Chromatic</label>
+              <input
+                type="range"
+                id="chromaticAberration"
+                min="0"
+                max="0.02"
+                step="0.001"
+                value="0"
+              />
+            </div>
+          </div>
+          <div class="global-row" style="margin-top: 4px;">
+            <div class="global-col">
+              <label for="filmGrain">Film Grain</label>
+              <input
+                type="range"
+                id="filmGrain"
+                min="0"
+                max="0.3"
+                step="0.01"
+                value="0"
+              />
+            </div>
+            <div class="global-col">
+              <label for="vignette">Vignette</label>
+              <input
+                type="range"
+                id="vignette"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- NEW: Audio Visualization Overlay -->
+        <div class="global-group">
+          <h3>Audio Visualization</h3>
+          <select id="audioVizMode">
+            <option value="none">None</option>
+            <option value="waveform">Waveform</option>
+            <option value="spectrum">Spectrum Bars</option>
+            <option value="circular">Circular Spectrum</option>
+          </select>
+          <label class="field-label" for="audioVizOpacity">Opacity</label>
+          <input
+            type="range"
+            id="audioVizOpacity"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0.5"
+          />
+        </div>
+
+        <div class="global-group">
+          <h3>Camera</h3>
+          <div class="global-row">
+            <div class="global-col">
+              <label for="cameraZoom">Zoom</label>
+              <input
+                type="range"
+                id="cameraZoom"
+                min="0.3"
+                max="2"
+                step="0.01"
+                value="1"
+              />
+            </div>
+            <div class="global-col">
+              <label for="cameraRotate">Rotation (°)</label>
+              <input
+                type="range"
+                id="cameraRotate"
+                min="-180"
+                max="180"
+                step="1"
+                value="0"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="global-group">
+          <h3>Logo / Text</h3>
+          <div class="global-row">
+            <div class="global-col">
+              <label for="logoTextInput">Logo Text</label>
+              <input type="text" id="logoTextInput" value="Your Logo" />
+            </div>
+            <div class="global-col">
+              <label for="logoSize">Text Size</label>
+              <input
+                type="range"
+                id="logoSize"
+                min="10"
+                max="48"
+                step="1"
+                value="18"
+              />
+            </div>
+          </div>
+          <label class="checkbox-row">
+            <input type="checkbox" id="logoVisible" checked />
+            Show Logo
+          </label>
+        </div>
+
+        <!-- NEW: Custom Color Palette Picker -->
+        <div class="global-group">
+          <h3>Custom Color Palette</h3>
+          <div class="palette-picker">
+            <div class="palette-color-row">
+              <label>Color A</label>
+              <input type="color" id="paletteA" value="#5588cc" />
+            </div>
+            <div class="palette-color-row">
+              <label>Color B</label>
+              <input type="color" id="paletteB" value="#88cc55" />
+            </div>
+            <div class="palette-color-row">
+              <label>Color C</label>
+              <input type="color" id="paletteC" value="#cc5588" />
+            </div>
+            <div class="palette-color-row">
+              <label>Color D</label>
+              <input type="color" id="paletteD" value="#ccaa33" />
+            </div>
+          </div>
+          <button id="applyCustomPalette" style="width: 100%; margin-top: 4px;">Apply Custom Palette</button>
+        </div>
+
+        <div class="global-group">
+          <h3>Mood / Genre</h3>
+          <select id="moodSelect">
+            <option value="">-- Select mood / genre --</option>
+            <option value="chill">Chill / Ambient</option>
+            <option value="edm">Peak EDM / Festival</option>
+            <option value="dubstep">Dubstep / Heavy Bass</option>
+            <option value="techno">Techno / Minimal</option>
+            <option value="lofi">Lofi / Soft Pastel</option>
+            <option value="psy">Psytrance / Hypno</option>
+          </select>
+        </div>
+
+        <div class="global-group">
+          <h3>Tempo / Beat</h3>
+          <div id="tempoControls">
+            <button id="tapTempoBtn">Tap Tempo</button>
+            <span id="bpmDisplay">-- BPM</span>
+          </div>
+        </div>
+
+        <div class="global-group">
+          <h3>Presets</h3>
+          <div id="presetControls">
+            <input type="text" id="presetName" placeholder="Preset name" />
+            <button id="savePresetBtn">Save</button>
+          </div>
+          <select id="presetSelect">
+            <option value="">-- Select preset --</option>
+          </select>
+          <div class="preset-buttons">
+            <button id="loadPresetBtn">Load</button>
+            <button id="deletePresetBtn">Delete</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Keyboard Shortcuts Modal -->
+<div id="helpModal" style="display: none;">
+  <div id="helpModalContent">
+    <h2>Keyboard Shortcuts</h2>
+    <div class="shortcut-list">
+      <div class="shortcut-item"><kbd>Space</kbd> - Play/Pause Audio</div>
+      <div class="shortcut-item"><kbd>1-9</kbd> - Select Layer 1-9</div>
+      <div class="shortcut-item"><kbd>↑/↓</kbd> - Navigate Layers</div>
+      <div class="shortcut-item"><kbd>Delete</kbd> - Delete Selected Layer</div>
+      <div class="shortcut-item"><kbd>D</kbd> - Duplicate Layer</div>
+      <div class="shortcut-item"><kbd>M</kbd> - Toggle Mute Layer</div>
+      <div class="shortcut-item"><kbd>Ctrl+Z</kbd> - Undo</div>
+      <div class="shortcut-item"><kbd>Ctrl+Y</kbd> - Redo</div>
+      <div class="shortcut-item"><kbd>Ctrl+S</kbd> - Quick Save Preset</div>
+      <div class="shortcut-item"><kbd>R</kbd> - Randomize Current Layer</div>
+      <div class="shortcut-item"><kbd>Esc</kbd> - Close This Dialog</div>
+    </div>
+    <button id="closeHelpBtn">Close</button>
+  </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>
