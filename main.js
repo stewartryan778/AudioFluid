@@ -93,68 +93,74 @@ window.addEventListener("DOMContentLoaded", () => {
     chill: {
       name: "Chill / Ambient",
       brightness: 0.45,
-      audioReact: 0.7,
-      cameraZoom: 1.1,
+      audioReact: 0.6,
+      cameraZoom: 1.15,
       cameraRotateDeg: 0,
-      // Soft clouds + rings + pixel for BG, orbit as optional object
-      layerVisualModes: [8, 11, 4, 5],
-      layerColorThemes: [4, 0, 7],
-      layerBlends: ["normal", "screen", "screen", "add"]
+      // Soft clouds + DNA helix + pixel mosaic  
+      layerVisualModes: [8, 15, 4],
+      layerColorThemes: [7, 4, 0],  // Vaporwave, Sunset, Cool
+      layerBlends: ["normal", "screen", "overlay"],
+      postProcessing: { bloom: 0.3, vignette: 0.2, saturation: 0.8 }
     },
     edm: {
       name: "Peak EDM / Festival",
-      brightness: 0.9,
-      audioReact: 1.7,
-      cameraZoom: 0.85,
-      cameraRotateDeg: 8,
-      // Bars + laser web + orbit + rings
-      layerVisualModes: [6, 10, 5, 11],
-      layerColorThemes: [2, 3, 6],
-      layerBlends: ["add", "screen", "add", "screen"]
+      brightness: 0.95,
+      audioReact: 1.8,
+      cameraZoom: 0.8,
+      cameraRotateDeg: 12,
+      // Audio bars + laser web + electric arcs + radial waves
+      layerVisualModes: [6, 10, 19, 17],
+      layerColorThemes: [2, 3, 6, 1],  // Neon, Cyber Grid, Ice Laser, Warm
+      layerBlends: ["add", "add", "dodge", "screen"],
+      postProcessing: { bloom: 0.7, rgbSplit: 3, saturation: 1.3, contrast: 1.2 }
     },
     dubstep: {
       name: "Dubstep / Heavy Bass",
-      brightness: 0.8,
-      audioReact: 1.9,
-      cameraZoom: 0.9,
-      cameraRotateDeg: -10,
-      // Swirl + bars + stars + laser web
-      layerVisualModes: [2, 6, 7, 10],
-      layerColorThemes: [5, 2, 6],
-      layerBlends: ["add", "add", "screen", "add"]
+      brightness: 0.85,
+      audioReact: 2.0,
+      cameraZoom: 0.85,
+      cameraRotateDeg: -15,
+      // Swirl + fractal zoom + electric arcs + plasma grid
+      layerVisualModes: [2, 18, 19, 16],
+      layerColorThemes: [5, 2, 6, 3],  // Toxic Green, Neon, Ice Laser, Cyber
+      layerBlends: ["add", "difference", "dodge", "add"],
+      postProcessing: { bloom: 0.6, chromaticAberration: 0.008, saturation: 1.4, contrast: 1.3 }
     },
     techno: {
       name: "Techno / Minimal",
-      brightness: 0.55,
-      audioReact: 1.0,
+      brightness: 0.6,
+      audioReact: 1.1,
       cameraZoom: 1.0,
       cameraRotateDeg: 0,
-      // Tunnel + horizon + kaleido grid
-      layerVisualModes: [3, 9, 1],
-      layerColorThemes: [3, 6, 0],
-      layerBlends: ["normal", "screen", "multiply"]
+      // Tunnel + horizon + kaleido grid + plasma grid
+      layerVisualModes: [3, 9, 1, 16],
+      layerColorThemes: [3, 6, 0, 3],  // Cyber Grid, Ice Laser, Cool
+      layerBlends: ["normal", "multiply", "screen", "overlay"],
+      postProcessing: { vignette: 0.4, contrast: 1.2, saturation: 0.9 }
     },
     lofi: {
       name: "Lofi / Soft Pastel",
       brightness: 0.4,
-      audioReact: 0.6,
-      cameraZoom: 1.2,
+      audioReact: 0.5,
+      cameraZoom: 1.25,
       cameraRotateDeg: 0,
-      // Pixel + clouds + rings, pastel themes
-      layerVisualModes: [4, 8, 11],
-      layerColorThemes: [7, 4, 0],
-      layerBlends: ["normal", "screen", "screen"]
+      // Soft clouds + pixel mosaic + rings
+      layerVisualModes: [8, 4, 11],
+      layerColorThemes: [7, 4, 0],  // Vaporwave, Sunset, Cool
+      layerBlends: ["normal", "screen", "overlay"],
+      postProcessing: { filmGrain: 0.15, vignette: 0.3, saturation: 0.7, bloom: 0.2 }
     },
     psy: {
       name: "Psytrance / Hypno",
-      brightness: 0.85,
-      audioReact: 1.5,
-      cameraZoom: 0.95,
-      cameraRotateDeg: 20,
-      // Kaleido + swirl + laser web + starfield
-      layerVisualModes: [1, 2, 10, 7],
-      layerColorThemes: [2, 7, 3, 6],
-      layerBlends: ["add", "screen", "add", "screen"]
+      brightness: 0.9,
+      audioReact: 1.6,
+      cameraZoom: 0.9,
+      cameraRotateDeg: 25,
+      // Kaleido + swirl + fractal zoom + DNA helix + laser web
+      layerVisualModes: [1, 2, 18, 15, 10],
+      layerColorThemes: [2, 7, 3, 6, 5],  // Neon, Vaporwave, Cyber, Ice, Toxic
+      layerBlends: ["add", "screen", "difference", "dodge", "add"],
+      postProcessing: { bloom: 0.8, chromaticAberration: 0.012, saturation: 1.5, rgbSplit: 5 }
     }
   };
 
@@ -516,6 +522,25 @@ window.addEventListener("DOMContentLoaded", () => {
       cameraZoomSlider.value = String(cameraZoom);
       cameraRotateSlider.value = String(cameraRotateDeg);
 
+      // Apply post-processing if defined
+      if (cfg.postProcessing) {
+        const pp = cfg.postProcessing;
+        if (document.getElementById('bloomIntensity')) 
+          document.getElementById('bloomIntensity').value = pp.bloom || 0;
+        if (document.getElementById('vignette')) 
+          document.getElementById('vignette').value = pp.vignette || 0;
+        if (document.getElementById('saturation')) 
+          document.getElementById('saturation').value = pp.saturation || 1;
+        if (document.getElementById('contrast')) 
+          document.getElementById('contrast').value = pp.contrast || 1;
+        if (document.getElementById('filmGrain')) 
+          document.getElementById('filmGrain').value = pp.filmGrain || 0;
+        if (document.getElementById('chromaticAberration')) 
+          document.getElementById('chromaticAberration').value = pp.chromaticAberration || 0;
+        if (document.getElementById('rgbSplit')) 
+          document.getElementById('rgbSplit').value = pp.rgbSplit || 0;
+      }
+
       if (layers.length === 0) {
         layers.push(new Layer());
         selectedLayer = 0;
@@ -552,6 +577,48 @@ window.addEventListener("DOMContentLoaded", () => {
   macroDetailSlider.addEventListener("input", () => {
     macroDetail = parseFloat(macroDetailSlider.value || "0.5");
   });
+
+  // ----- Custom Color Palette -----
+  let customPaletteActive = false;
+  let customPaletteColors = {
+    A: [0.33, 0.53, 0.80],  // Default blue
+    B: [0.53, 0.80, 0.33],  // Default green
+    C: [0.80, 0.33, 0.53],  // Default pink
+    D: [0.80, 0.67, 0.20]   // Default orange
+  };
+
+  function hexToRgb01(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? [
+      parseInt(result[1], 16) / 255,
+      parseInt(result[2], 16) / 255,
+      parseInt(result[3], 16) / 255
+    ] : [0.5, 0.5, 0.5];
+  }
+
+  const applyCustomPaletteBtn = document.getElementById('applyCustomPalette');
+  if (applyCustomPaletteBtn) {
+    applyCustomPaletteBtn.addEventListener('click', () => {
+      const paletteA = document.getElementById('paletteA');
+      const paletteB = document.getElementById('paletteB');
+      const paletteC = document.getElementById('paletteC');
+      const paletteD = document.getElementById('paletteD');
+
+      if (paletteA && paletteB && paletteC && paletteD) {
+        customPaletteColors.A = hexToRgb01(paletteA.value);
+        customPaletteColors.B = hexToRgb01(paletteB.value);
+        customPaletteColors.C = hexToRgb01(paletteC.value);
+        customPaletteColors.D = hexToRgb01(paletteD.value);
+        customPaletteActive = true;
+        
+        console.log('Custom palette applied:', customPaletteColors);
+        applyCustomPaletteBtn.textContent = '✓ Applied!';
+        setTimeout(() => {
+          applyCustomPaletteBtn.textContent = 'Apply Custom Palette';
+        }, 2000);
+      }
+    });
+  }
 
   // ----- Layer UI helpers -----
 
@@ -752,6 +819,11 @@ window.addEventListener("DOMContentLoaded", () => {
                 <option value="add" ${layer.blend === "add" ? "selected" : ""}>Add</option>
                 <option value="screen" ${layer.blend === "screen" ? "selected" : ""}>Screen</option>
                 <option value="multiply" ${layer.blend === "multiply" ? "selected" : ""}>Multiply</option>
+                <option value="overlay" ${layer.blend === "overlay" ? "selected" : ""}>Overlay</option>
+                <option value="subtract" ${layer.blend === "subtract" ? "selected" : ""}>Subtract</option>
+                <option value="dodge" ${layer.blend === "dodge" ? "selected" : ""}>Color Dodge</option>
+                <option value="burn" ${layer.blend === "burn" ? "selected" : ""}>Color Burn</option>
+                <option value="difference" ${layer.blend === "difference" ? "selected" : ""}>Difference</option>
               </select>
             </div>
 
@@ -1082,6 +1154,11 @@ window.addEventListener("DOMContentLoaded", () => {
     uniform float u_strobe;
     uniform float u_beatPhase;
     uniform float u_kind;   // 0 = shader BG, 1 = object overlay
+    uniform float u_useCustomPalette;
+    uniform vec3 u_customA;
+    uniform vec3 u_customB;
+    uniform vec3 u_customC;
+    uniform vec3 u_customD;
 
     vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d) {
       return a + b * cos(6.28318 * (c * t + d));
@@ -1113,7 +1190,13 @@ window.addEventListener("DOMContentLoaded", () => {
       vec3 C;
       vec3 D;
 
-      if (u_theme < 0.5) {
+      if (u_useCustomPalette > 0.5) {
+        // Use custom palette colors
+        A = u_customA;
+        B = u_customB;
+        C = u_customC;
+        D = u_customD;
+      } else if (u_theme < 0.5) {
         A = vec3(0.13, 0.18, 0.25);
         B = vec3(0.3, 0.6, 1.0);
         C = vec3(0.35, 0.45, 0.75);
@@ -1470,6 +1553,11 @@ window.addEventListener("DOMContentLoaded", () => {
   const uStrobeLoc    = gl.getUniformLocation(program, "u_strobe");
   const uBeatPhaseLoc = gl.getUniformLocation(program, "u_beatPhase");
   const uKindLoc      = gl.getUniformLocation(program, "u_kind");
+  const uUseCustomPaletteLoc = gl.getUniformLocation(program, "u_useCustomPalette");
+  const uCustomALoc   = gl.getUniformLocation(program, "u_customA");
+  const uCustomBLoc   = gl.getUniformLocation(program, "u_customB");
+  const uCustomCLoc   = gl.getUniformLocation(program, "u_customC");
+  const uCustomDLoc   = gl.getUniformLocation(program, "u_customD");
 
   gl.enable(gl.BLEND);
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -1544,9 +1632,32 @@ window.addEventListener("DOMContentLoaded", () => {
         case "multiply":
           gl.blendFunc(gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA);
           break;
+        case "overlay":
+          gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+          // Overlay is approximated, true overlay needs shader
+          break;
+        case "subtract":
+          gl.blendEquation(gl.FUNC_REVERSE_SUBTRACT);
+          gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+          break;
+        case "dodge":
+          gl.blendFunc(gl.ONE, gl.ONE);
+          break;
+        case "burn":
+          gl.blendFunc(gl.ZERO, gl.ONE_MINUS_SRC_COLOR);
+          break;
+        case "difference":
+          gl.blendEquation(gl.FUNC_REVERSE_SUBTRACT);
+          gl.blendFunc(gl.ONE, gl.ONE);
+          break;
         default:
           gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
           break;
+      }
+      
+      // Reset blend equation for non-subtract modes
+      if (layer.blend !== "subtract" && layer.blend !== "difference") {
+        gl.blendEquation(gl.FUNC_ADD);
       }
 
       let offX = layer.offsetX || 0;
@@ -1575,6 +1686,15 @@ window.addEventListener("DOMContentLoaded", () => {
       gl.uniform1f(uStrobeLoc, strobeEffective);
       gl.uniform1f(uBeatPhaseLoc, beatPhase);
       gl.uniform1f(uKindLoc, layer.kind === "object" ? 1.0 : 0.0);
+      
+      // Set custom palette uniforms
+      gl.uniform1f(uUseCustomPaletteLoc, customPaletteActive ? 1.0 : 0.0);
+      if (customPaletteActive) {
+        gl.uniform3f(uCustomALoc, ...customPaletteColors.A);
+        gl.uniform3f(uCustomBLoc, ...customPaletteColors.B);
+        gl.uniform3f(uCustomCLoc, ...customPaletteColors.C);
+        gl.uniform3f(uCustomDLoc, ...customPaletteColors.D);
+      }
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     });
